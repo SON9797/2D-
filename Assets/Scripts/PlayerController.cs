@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _rayLength = 1f;
     [SerializeField] private LayerMask _groundLayer;
 
-    Animator _anim;
+    public Animator _anim;
     Rigidbody2D _rb;
     SpriteRenderer _spriteRenderer;
 
@@ -41,11 +41,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            currentState = PlayerState.Gun;
-            _anim.SetTrigger("GetGun");
-        }
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    currentState = PlayerState.Gun;
+        //    _anim.SetTrigger("GetGun");
+        //}
 
         switch (currentState) 
         {
