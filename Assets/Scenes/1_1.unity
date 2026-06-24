@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 361477603}
   - component: {fileID: 361477602}
   - component: {fileID: 361477604}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Tilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6509,7 +6509,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: c4d7d6470acd7bf45971042161c6e018, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6571,7 +6571,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   _playerSpeed: 3
-  _jumpForce: 4
+  _walkJumpForce: 6
+  _runJumpForce: 8
+  _rayLength: 1
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!50 &439138342
 Rigidbody2D:
   serializedVersion: 5
@@ -6609,7 +6614,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 767cd7f0f514e774987f77bbb351ac89, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -6840,7 +6845,7 @@ GameObject:
   - component: {fileID: 1560934830}
   - component: {fileID: 1560934829}
   - component: {fileID: 1560934831}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Tilemap (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
