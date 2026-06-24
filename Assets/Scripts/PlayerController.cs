@@ -1,8 +1,18 @@
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
+    public enum PlayerState
+    {
+        Normal,
+        Gun,
+        Death,
+    }
+
+    public PlayerState currentState;
+
     [Header("플레이어 설정")]
     [SerializeField] private float _playerSpeed = 3f;
     [SerializeField] private float _walkJumpForce = 6f;
@@ -17,19 +27,43 @@ public class PlayerController : MonoBehaviour
     SpriteRenderer _spriteRenderer;
 
     private PlatformEffector2D _currentEffector;
+    private SpriteChanger _spriteChanger;
 
     void Start()
     {
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _spriteChanger = Object.FindFirstObjectByType<SpriteChanger>();
+
+        currentState = PlayerState.Normal;
     }
 
     void Update()
     {
-        PlayerMove();
-        CrouchPlayer();
-        JumpPlayer();
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            currentState = PlayerState.Gun;
+            _anim.SetTrigger("GetGun");
+        }
+
+        switch (currentState) 
+        {
+            case PlayerState.Normal:
+                PlayerMove();
+                CrouchPlayer();
+                JumpPlayer();
+                break;
+
+            case PlayerState.Gun:
+                PlayerMove();
+                CrouchPlayer();
+                JumpPlayer();
+                break;
+
+            case PlayerState.Death:
+                break;
+        }
     }
 
     private void LateUpdate()
