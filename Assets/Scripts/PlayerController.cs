@@ -1,13 +1,12 @@
 using UnityEngine;
-using System;
-using UnityEngine.Rendering;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("플레이어 설정")]
     [SerializeField] private float _playerSpeed = 3f;
     [SerializeField] private float _walkJumpForce = 6f;
-    [SerializeField] private float _runJumpForce = 8f;
+    [SerializeField] private float _runJumpForce = 9f;
 
     [Header("바닥 체크")]
     [SerializeField] private float _rayLength = 1f;
@@ -16,6 +15,8 @@ public class PlayerController : MonoBehaviour
     Animator _anim;
     Rigidbody2D _rb;
     SpriteRenderer _spriteRenderer;
+
+    private PlatformEffector2D _currentEffector;
 
     void Start()
     {
@@ -28,6 +29,11 @@ public class PlayerController : MonoBehaviour
     {
         PlayerMove();
         JumpPlayer();
+    }
+
+    private void LateUpdate()
+    {
+        LimitPlayerInScreen();
     }
 
     void PlayerMove()
@@ -54,21 +60,55 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
-            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0f);
+            if (Input.GetAxisRaw("Vertical") < 0f && _currentEffector != null)
+            {
+                StartCoroutine(DropDownRoutine());
+            }
 
-            float currentJumpForce = Input.GetKey(KeyCode.LeftShift) ? _runJumpForce : _walkJumpForce;
+            else
+            {
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0f);
 
-            _rb.AddForce(Vector2.up * currentJumpForce, ForceMode2D.Impulse);
-            _anim.SetTrigger("Jump");
+                float currentJumpForce = Input.GetKey(KeyCode.LeftShift) ? _runJumpForce : _walkJumpForce;
+
+                _rb.AddForce(Vector2.up * currentJumpForce, ForceMode2D.Impulse);
+                _anim.SetTrigger("Jump");
+            }            
         }
     }
 
     private bool IsGrounded()
     {
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, _rayLength, _groundLayer);
-
         Debug.DrawRay(transform.position, Vector3.down * _rayLength, Color.red);
 
-        return hit.collider != null;
+        if (hit.collider != null)
+        {
+            _currentEffector = hit.collider.GetComponent<PlatformEffector2D>();
+            return true;
+        }
+
+        _currentEffector = null;
+        return false;
+    }
+
+    void LimitPlayerInScreen()
+    {
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
+
+        viewportPos.x = Mathf.Clamp(viewportPos.x, 0.05f, 0.95f);
+
+        transform.position = Camera.main.ViewportToWorldPoint(viewportPos);
+    }
+
+    private IEnumerator DropDownRoutine()
+    {
+        _anim.SetTrigger("Jump");
+
+        _currentEffector.rotationalOffset = 180f;
+
+        yield return new WaitForSeconds(0.5f);
+
+        _currentEffector.rotationalOffset = 0f;
     }
 }
