@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         PlayerMove();
+        CrouchPlayer();
         JumpPlayer();
     }
 
@@ -38,6 +39,12 @@ public class PlayerController : MonoBehaviour
 
     void PlayerMove()
     {
+        if (Input.GetAxisRaw("Vertical") < 0f && IsGrounded()) 
+        {
+            _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y); 
+            return;
+        }
+
         float h = Input.GetAxis("Horizontal");
 
         float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? _playerSpeed * 2f : _playerSpeed;
@@ -53,6 +60,19 @@ public class PlayerController : MonoBehaviour
         else if (h < 0)
         {
             _spriteRenderer.flipX = true;        
+        }
+    }
+
+    void CrouchPlayer()
+    {
+        if (Input.GetAxisRaw("Vertical") < 0f && IsGrounded())
+        {
+            _anim.SetBool("Crouch", true);
+        }
+
+        else
+        {
+            _anim.SetBool("Crouch", false);
         }
     }
 
