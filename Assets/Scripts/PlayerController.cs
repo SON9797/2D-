@@ -15,8 +15,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("플레이어 설정")]
     [SerializeField] private float _playerSpeed = 3f;
-    [SerializeField] private float _walkJumpForce = 6f;
-    [SerializeField] private float _runJumpForce = 9f;
+    [SerializeField] private float _walkJumpForce = 8f;
+    [SerializeField] private float _runJumpForce = 13f;
 
     [Header("바닥 체크")]
     [SerializeField] private float _rayLength = 1f;
@@ -41,12 +41,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.F))
-        //{
-        //    currentState = PlayerState.Gun;
-        //    _anim.SetTrigger("GetGun");
-        //}
-
         switch (currentState) 
         {
             case PlayerState.Normal:
@@ -159,10 +153,14 @@ public class PlayerController : MonoBehaviour
     {
         _anim.SetTrigger("Jump");
 
-        _currentEffector.rotationalOffset = 180f;
+        PlatformEffector2D cachedEffector = _currentEffector;
+
+        if (cachedEffector == null) yield break;
+
+        cachedEffector.rotationalOffset = 180f;
 
         yield return new WaitForSeconds(0.5f);
 
-        _currentEffector.rotationalOffset = 0f;
+        cachedEffector.rotationalOffset = 0f;
     }
 }
