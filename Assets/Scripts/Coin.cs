@@ -1,43 +1,48 @@
 using DG.Tweening;
 using System.Collections;
-using TMPro;
+using TreeEditor;
 using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
     int _coinScore = 1;
 
-    public Vector3 targetPos = new Vector3(9.8f, 3, 0);
-
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.CompareTag("Player"))
-    //    {
-    //        Destroy(gameObject);
-    //
-    //        ScoreManager.instance.PlusScore(_coinScore);
-    //    }
-    //}
+    public Vector3 viewportTargetPos = new Vector3(0.9f, 0.9f, 0); 
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null)
+            {
+                col.enabled = false;
+            }
+
             StartCoroutine(DOTweenRoutine());
         }
     }
 
     IEnumerator DOTweenRoutine()
     {
-        Vector3 wolrdPos = Camera.main.ViewportToScreenPoint(targetPos);
+        float duration = 1f;
+        float elapsed = 0f;
 
-        wolrdPos.z = transform.position.z;
+        Vector3 startPos = transform.position;
 
-        transform.DOMove(wolrdPos, 1f);
+        DOTween.To(() => elapsed, x => elapsed = x, 1f, duration)
+            .SetEase(Ease.InOutQuad)
+            .OnUpdate(() =>
+            {
+                Vector3 currentTargetWorldPos = Camera.main.ViewportToWorldPoint(viewportTargetPos);
+                currentTargetWorldPos.z = transform.position.z;
 
-        yield return new WaitForSeconds(1f);
+                transform.position = Vector3.Lerp(startPos, currentTargetWorldPos, elapsed);
+            });
 
-        //Destroy(gameObject);
+        yield return new WaitForSeconds(duration);
+
         ScoreManager.instance.PlusScore(_coinScore);
+        Destroy(gameObject);
     }
 }
