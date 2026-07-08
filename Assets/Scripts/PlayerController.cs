@@ -29,6 +29,9 @@ public class PlayerController : MonoBehaviour
     private PlatformEffector2D _currentEffector;
     private SpriteChanger _spriteChanger;
 
+    public float HorizontalVelocity => _rb != null ? _rb.linearVelocity.x : 0f;
+    public bool IsMoving => Mathf.Abs(HorizontalVelocity) > 0.01f;
+
     void Start()
     {
         _anim = GetComponent<Animator>();

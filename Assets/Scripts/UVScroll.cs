@@ -1,19 +1,35 @@
+using System.Collections;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class UVScroll : MonoBehaviour
 {
-    public float scrollSpeed = 0.1f;
+    public PlayerController player;
+
+    public float scrollSpeed = 0.005f;
+
     private Material mat;
+    private MeshRenderer meshRenderer;
 
     void Start()
     {
-        mat = GetComponent<Material>();
+        meshRenderer = GetComponent<MeshRenderer>();
+        mat = meshRenderer.material;
+
+        if (player == null)
+        {
+            player = Object.FindFirstObjectByType<PlayerController>();
+        }
     }
 
     void Update()
     {
-        Vector2 offset = mat.mainTextureOffset;
-        offset.x += scrollSpeed * Time.deltaTime;
-        mat.mainTextureOffset = offset;
+        if (player == null) return;
+
+        if (player.IsMoving)
+        {
+            float offset = player.HorizontalVelocity * scrollSpeed * Time.deltaTime;
+            mat.mainTextureOffset += new Vector2(offset, 0);
+        }
     }
 }
