@@ -6,6 +6,8 @@ public class ChomperController : MonoBehaviour
     [Header("설정")]
     [SerializeField] private float _chomperSpeed = 1.5f;
     [SerializeField] private float _changeTime = 2f;
+    [SerializeField] private GameObject _respawnPos;
+    [SerializeField] private int _chomperScore = 5;
 
     private float _timer;
     private Vector2 _directionX;
@@ -82,7 +84,6 @@ public class ChomperController : MonoBehaviour
         {
             if (direction.y > 0)
             {
-                Debug.Log("위");
                 ChomperDie();
             }
 
@@ -95,7 +96,8 @@ public class ChomperController : MonoBehaviour
         else
         {
             if (collision.gameObject.CompareTag("Player"))
-            {                
+            {
+                collision.transform.position = _respawnPos.transform.position;
                 StartCoroutine(AttackRoutine());
             }
         }
@@ -110,14 +112,13 @@ public class ChomperController : MonoBehaviour
 
         anim.SetTrigger("Death");
 
+        ScoreManager.instance.PlusScore(_chomperScore);
+
         Destroy(gameObject, 0.5f);
     }
 
-    // 여기 고치기
     IEnumerator AttackRoutine()
     {
-        Debug.Log("플레이어 사망");
-
         _rb.linearVelocity = Vector2.zero;
         _rb.angularVelocity = 0f;
 
