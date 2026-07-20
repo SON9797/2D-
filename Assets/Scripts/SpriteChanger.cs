@@ -12,7 +12,9 @@ public class SpriteChanger : MonoBehaviour
     {
         if (spriteRenderer == null)
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            spriteRenderer = GetComp
+                
+                nt<SpriteRenderer>();
         }
     }
 
