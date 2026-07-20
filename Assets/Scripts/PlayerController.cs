@@ -124,7 +124,7 @@ public class PlayerController : MonoBehaviour
 
                 _rb.AddForce(Vector2.up * currentJumpForce, ForceMode2D.Impulse);
                 _anim.SetTrigger("Jump");
-            }            
+            }
         }
     }
 
@@ -154,16 +154,18 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator DropDownRoutine()
     {
-        _anim.SetTrigger("Jump");
-
         PlatformEffector2D cachedEffector = _currentEffector;
-
         if (cachedEffector == null) yield break;
+
+        _anim.SetTrigger("Jump");
 
         cachedEffector.rotationalOffset = 180f;
 
         yield return new WaitForSeconds(0.5f);
 
-        cachedEffector.rotationalOffset = 0f;
+        if (cachedEffector != null)
+        {
+            cachedEffector.rotationalOffset = 0f;
+        }
     }
 }

@@ -123,7 +123,7 @@ public class SpitterController : MonoBehaviour
         {
             if (direction.y > 0)
             {
-                ChomperDie();
+                SpitterDie();
             }
 
             else
@@ -131,14 +131,28 @@ public class SpitterController : MonoBehaviour
                 Debug.Log("¾Æ·¡");
             }
         }
+
+        else
+        {
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                collision.transform.position = _respawnPos.transform.position;
+            }
+        }
     }
 
-    void ChomperDie()
+    void SpitterDie()
     {
         _rb.linearVelocity = Vector2.zero;
         _rb.angularVelocity = 0f;
 
         _rb.bodyType = RigidbodyType2D.Kinematic;
+
+        Collider2D enemyCollider = GetComponent<Collider2D>();
+        if (enemyCollider != null)
+        {
+            enemyCollider.enabled = false;
+        }
 
         anim.SetTrigger("Death");
 

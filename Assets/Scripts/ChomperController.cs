@@ -110,6 +110,12 @@ public class ChomperController : MonoBehaviour
 
         _rb.bodyType = RigidbodyType2D.Kinematic;
 
+        Collider2D enemyCollider = GetComponent<Collider2D>();
+        if (enemyCollider != null)
+        {
+            enemyCollider.enabled = false;
+        }
+
         anim.SetTrigger("Death");
 
         ScoreManager.instance.PlusScore(_chomperScore);
