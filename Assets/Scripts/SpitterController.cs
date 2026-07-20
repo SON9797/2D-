@@ -1,16 +1,27 @@
 using System.Collections;
-using UnityEngine;
+using UnityEngine; 
 
-public class ChomperController : MonoBehaviour
+public class SpitterController : MonoBehaviour
 {
     [Header("설정")]
-    [SerializeField] private float _chomperSpeed = 1.5f;
+    [SerializeField] private float _spitterSpeed = 1.0f;
     [SerializeField] private float _changeTime = 2f;
     [SerializeField] private GameObject _respawnPos;
-    [SerializeField] private int _chomperScore = 5;
+    [SerializeField] private int _spitterScore = 10;
+
+    [Header("점프 설정")]
+    [SerializeField] private float _minJumpInterval = 2f;
+    [SerializeField] private float _maxJumpInterval = 5f;
+    [SerializeField] private float _spitterJumpForce = 5f;
+    [SerializeField] private LayerMask _groundLayer;
 
     private float _timer;
     private Vector2 _directionX;
+
+    private float _jumpTimer;
+    private float _nextJumpTime;
+    private bool _isGrounded;
+    private Collider2D _collider;
 
     public Animator anim;
     Rigidbody2D _rb;
@@ -21,8 +32,11 @@ public class ChomperController : MonoBehaviour
         anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _collider = GetComponent<Collider2D>();
 
         ChomperMove();
+
+        SetRandomJumpTime();
     }
 
     void Update()
@@ -34,7 +48,32 @@ public class ChomperController : MonoBehaviour
             ChomperMove();
         }
 
-        transform.Translate(_directionX * _chomperSpeed * Time.deltaTime);
+        _jumpTimer += Time.deltaTime;
+
+        if (_jumpTimer >= _nextJumpTime)
+        {
+            TryJump();
+        }
+
+        transform.Translate(new Vector3(_directionX.x * _spitterSpeed * Time.deltaTime, 0, 0));
+    }
+
+    void SetRandomJumpTime()
+    {
+        _nextJumpTime = Random.Range(_minJumpInterval, _maxJumpInterval);
+        _jumpTimer = 0f;
+    }
+
+    void TryJump()
+    {
+        _isGrounded = Physics2D.IsTouchingLayers(_collider, _groundLayer);
+
+        if (_isGrounded)
+        {
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _spitterJumpForce);
+        }
+
+        SetRandomJumpTime();
     }
 
     void ChomperMove()
@@ -69,7 +108,7 @@ public class ChomperController : MonoBehaviour
         }
         else if (_directionX.x < 0)
         {
-            _spriteRenderer.flipX = true; 
+            _spriteRenderer.flipX = true;
         }
     }
 
@@ -92,15 +131,6 @@ public class ChomperController : MonoBehaviour
                 Debug.Log("아래");
             }
         }
-
-        else
-        {
-            if (collision.gameObject.CompareTag("Player"))
-            {
-                collision.transform.position = _respawnPos.transform.position;
-                StartCoroutine(AttackRoutine());
-            }
-        }
     }
 
     void ChomperDie()
@@ -112,20 +142,8 @@ public class ChomperController : MonoBehaviour
 
         anim.SetTrigger("Death");
 
-        ScoreManager.instance.PlusScore(_chomperScore);
+        ScoreManager.instance.PlusScore(_spitterScore);
 
         Destroy(gameObject, 0.5f);
-    }
-
-    IEnumerator AttackRoutine()
-    {
-        _rb.linearVelocity = Vector2.zero;
-        _rb.angularVelocity = 0f;
-
-        anim.SetTrigger("Attack");
-
-        yield return new WaitForSeconds(2f);
-
-        ChomperMove();
     }
 }
