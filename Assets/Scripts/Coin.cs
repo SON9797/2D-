@@ -9,7 +9,7 @@ public class Coin : MonoBehaviour
 
     public Vector3 viewportTargetPos = new Vector3(0.9f, 0.9f, 0); 
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {

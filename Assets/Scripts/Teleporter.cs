@@ -1,11 +1,15 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Collections;
 
 public class Teleporter : MonoBehaviour
 {
     [Header("¼³Á¤")]
     [SerializeField] private Animator _anim;
     [SerializeField] private GameObject _uiText;
+
+    private bool _isLoading = false;
 
     private bool _interaction = false;
     PlayerController _playerController;
@@ -27,7 +31,7 @@ public class Teleporter : MonoBehaviour
     {
         ClearStage();
 
-        if (isClear && _interaction)
+        if (isClear && _interaction && !_isLoading)
         {
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -71,6 +75,18 @@ public class Teleporter : MonoBehaviour
     
     void LoadNextStage()
     {
-        SceneManager.LoadScene("1_2");
+        _isLoading = true;
+
+        _uiText.SetActive(false);
+
+        if (FadeManager.instance != null)
+        {
+            FadeManager.instance.LoadSceneWithFade("1_2");
+        }
+
+        else
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("1_2");
+        }
     }
 }
