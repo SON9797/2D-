@@ -22,6 +22,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _rayLength = 1f;
     [SerializeField] private LayerMask _groundLayer;
 
+    [Header("ÃÑ ¼³Á¤")]
+    [SerializeField] private GameObject _bulletPrefab;
+    [SerializeField] private Transform _firePoint;
+    [SerializeField] private float _fireRate = 0.2f;
+
+    private float _nextFireTime = 0f;
+    private float _lastShootTime = 0f;
+
     public Animator _anim;
     Rigidbody2D _rb;
     SpriteRenderer _spriteRenderer;
@@ -56,6 +64,7 @@ public class PlayerController : MonoBehaviour
                 PlayerMove();
                 CrouchPlayer();
                 JumpPlayer();
+                HandleShooting();
                 break;
 
             case PlayerState.Death:
@@ -84,13 +93,70 @@ public class PlayerController : MonoBehaviour
 
         _anim.SetFloat("Speed", Mathf.Abs(_rb.linearVelocity.x));
 
-        if (h > 0)
+        if (Time.time >= _lastShootTime + 0.2f)
         {
-            _spriteRenderer.flipX = false;
+            if (h > 0)
+            {
+                SetFacingDirection(false);
+            }
+            else if (h < 0)
+            {
+                SetFacingDirection(true);
+            }
         }
-        else if (h < 0)
+    }
+
+    void SetFacingDirection(bool isLeft)
+    {
+        _spriteRenderer.flipX = isLeft;
+
+        if (_firePoint != null)
         {
-            _spriteRenderer.flipX = true;        
+            float xPos = Mathf.Abs(_firePoint.localPosition.x);
+            _firePoint.localPosition = new Vector3(isLeft ? -xPos : xPos, _firePoint.localPosition.y, 0);
+        }
+    }
+
+    void HandleShooting()
+    {
+        if (Time.time < _nextFireTime) return;
+
+        bool shootLeft = Input.GetKeyDown(KeyCode.Comma);
+        bool shootRight = Input.GetKeyDown(KeyCode.Period);
+
+        if (shootLeft || shootRight)
+        {
+            _nextFireTime = Time.time + _fireRate;
+            _lastShootTime = Time.time;
+
+            float fireDirection = 0f;
+
+            if (shootLeft)
+            {
+                fireDirection = -1f;
+                SetFacingDirection(true);
+            }
+            else if (shootRight)
+            {
+                fireDirection = 1f;
+                SetFacingDirection(false);
+            }
+
+            Shoot(fireDirection);
+        }
+    }
+
+    void Shoot(float direction)
+    {
+        if (_bulletPrefab != null && _firePoint != null)
+        {
+            GameObject bullet = Instantiate(_bulletPrefab, _firePoint.position, Quaternion.identity);
+
+            Bullet bulletLogic = bullet.GetComponent<Bullet>();
+            if (bulletLogic != null)
+            {
+                bulletLogic.Setup(direction);
+            }
         }
     }
 

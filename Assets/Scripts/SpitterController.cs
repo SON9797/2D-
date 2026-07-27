@@ -98,6 +98,11 @@ public class SpitterController : MonoBehaviour
 
             _timer = 0f;
         }
+
+        else if (collision.CompareTag("Bullet"))
+        {
+            SpitterDie();
+        }
     }
 
     void UpdateSpriteDirection()

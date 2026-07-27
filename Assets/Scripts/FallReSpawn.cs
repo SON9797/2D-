@@ -5,10 +5,7 @@ public class FallReSpawn : MonoBehaviour
     [Header("¼³Á¤")]
     [SerializeField] private GameObject _respawnPos;
 
-
-    private void OnCollisi
-        
-        nter2D(Collision2D collision)
+    private void OnCollisinter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Player"))
         {
