@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject _bulletPrefab;
     [SerializeField] private Transform _firePoint;
     [SerializeField] private float _fireRate = 0.2f;
+    [SerializeField] private MuzzleFlash _muzzleFlash;
 
     private float _nextFireTime = 0f;
     private float _lastShootTime = 0f;
@@ -157,6 +158,11 @@ public class PlayerController : MonoBehaviour
             {
                 bulletLogic.Setup(direction);
             }
+        }
+
+        if (_muzzleFlash != null)
+        {
+            _muzzleFlash.ShowEffect(direction < 0);
         }
     }
 

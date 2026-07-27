@@ -59,6 +59,11 @@ public class ChomperController : MonoBehaviour
 
             _timer = 0f;
         }
+
+        else if (collision.CompareTag("Bullet"))
+        {
+            ChomperDie();
+        }
     }
 
     void UpdateSpriteDirection()
